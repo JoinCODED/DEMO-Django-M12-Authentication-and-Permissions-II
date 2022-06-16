@@ -49,7 +49,7 @@ Show students file management in templates
    from users.forms import UserRegister
 
 
-   def registration(request):
+   def register_user(request):
        form = UserRegister()
        if request.method == "POST":
            form = UserRegister(request.POST)
@@ -77,7 +77,7 @@ Show students file management in templates
 
    urlpatterns = [
        ...
-       path("register/", user_views.registration, name="register"),
+       path("register/", user_views.register_user, name="register"),
    ]
    ```
 
@@ -123,6 +123,7 @@ Show students file management in templates
              </li>
              <li class="nav-item">
                <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
+               <a class="nav-link" href="">Sign In</a>
              </li>
            </ul>
          </div>
@@ -140,3 +141,132 @@ Show students file management in templates
      </body>
    </html>
    ```
+
+5. Update your `home.html` template in `shared/templates` to include the `register` link in the navbar:
+
+   ```html
+   <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
+   ```
+
+### Login
+
+1. Add the login form in `users/forms.py`:
+
+   ```python
+   class UserLogin(forms.Form):
+       username = forms.CharField(required=True)
+       password = forms.CharField(required=True, widget=forms.PasswordInput())
+   ```
+
+2. Add the `login` view in `users/views.py`:
+
+   ```python
+   from django.contrib.auth import login, authenticate
+   ...
+
+   from users.forms import UserLogin, UserRegister
+
+   ...
+
+   def login_user(request):
+       form = UserLogin()
+       if request.method == "POST":
+           form = UserLogin(request.POST)
+           if form.is_valid():
+               auth_user = authenticate(
+                 username=form.cleaned_data["username"],
+                 password=form.cleaned_data["password"],
+               )
+               if auth_user is not None:
+                   login(request, auth_user)
+                   return redirect("home")
+
+       context = {
+           "form": form,
+       }
+       return render(request, "login.html", context)
+   ```
+
+   - Explain that the `authenticate` helper from `Django` checks the credentials and then `login` actually performs that `login session`
+
+3. Add the `login` view to `urls.py`:
+
+   ```python
+   ...
+
+   urlpatterns = [
+       ...
+       path("login/", user_views.login_user, name="login"),
+   ]
+   ```
+
+4. Add the `login` template in `users/templates/login.html`:
+
+   ```html
+   <!DOCTYPE html>
+   {% load crispy_forms_tags %}
+   <html lang="en">
+     <head>
+       <meta charset="UTF-8" />
+       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+       <title>Login</title>
+       <link
+         rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+         integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+         crossorigin="anonymous"
+       />
+     </head>
+     <body>
+       <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <a class="navbar-brand" href="{% url 'home' %}">Bookstore</a>
+         <button
+           class="navbar-toggler"
+           type="button"
+           data-toggle="collapse"
+           data-target="#navbarSupportedContent"
+           aria-controls="navbarSupportedContent"
+           aria-expanded="false"
+           aria-label="Toggle navigation"
+         >
+           <span class="navbar-toggler-icon"></span>
+         </button>
+
+         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+           <ul class="navbar-nav mr-auto">
+             <li class="nav-item active">
+               <a class="nav-link" href="{% url 'home' %}">
+                 Home <span class="sr-only">(current)</span>
+               </a>
+             </li>
+             <li class="nav-item">
+               <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
+             </li>
+             <li class="nav-item">
+               <a class="nav-link" href="{% url 'login' %}">Sign In</a>
+             </li>
+           </ul>
+         </div>
+       </nav>
+
+       <div class="container">
+         <h1>Sign In</h1>
+         <form action="{% url 'login' %}" method="post">
+           <!-- prettier-ignore -->
+           {% csrf_token %}
+           {{ form | crispy }}
+           <button class="btn btn-success" type="submit">Login</button>
+         </form>
+       </div>
+     </body>
+   </html>
+   ```
+
+5. Update `home.html` and `register.html` to include the link to `login`:
+
+   ```html
+   <a class="nav-link" href="{% url 'login' %}">Sign In</a>
+   ```
+
+6. Try out the `login` form.
