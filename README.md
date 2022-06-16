@@ -326,3 +326,19 @@ Show students file management in templates
      </ul>
    </div>
    ```
+
+### Permissions
+
+We have already seen how `permissions` work in the templates, time to get `permissions` work on the `view` level
+
+1. Go to `http://localhost:8000/books`, and tell the students that we would like to hide this from anonymous users (i.e., unauthenticated users).
+2. Go `books/views.py` and add the following at the top of `get_books`:
+
+   ```python
+   if not request.user.is_authenticated:
+       raise Http404
+   ```
+
+   - This way the page does not exist for anonymous users.
+
+3. Explain that this is a higher level of protection, and that this completely blocks the page for anonymous users, while making these checks in the template is not the same. For example, adding an `if-statement` to whether or not a link should be displayed to the user only hides it. If there is no protection on the view level, the user could still go to that page by manipulating the url in the browser.

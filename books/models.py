@@ -10,6 +10,7 @@ class Book(models.Model):
         on_delete=models.CASCADE,
         related_name="books",
     )
+    cover = models.ImageField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.title
