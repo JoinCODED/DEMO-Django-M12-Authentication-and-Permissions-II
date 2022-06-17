@@ -148,6 +148,56 @@ Show students file management in templates
    <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
    ```
 
+### Logout
+
+1. Add the `logout` view in `users/views.py`:
+
+   ```python
+   from django.contrib.auth import authenticate, login, logout
+
+   ...
+
+   def logout_user(request):
+       logout(request)
+       return redirect("home")
+   ```
+
+   - Explain that no form is needed
+
+2. Add the `logout` view in `urls.py`:
+
+   ```python
+   ...
+
+   urlpatterns = [
+       ...
+       path("logout/", user_views.logout_user, name="logout"),
+   ]
+   ```
+
+3. Add the `logout` to our navbars like so:
+
+   ```html
+   <div class="collapse navbar-collapse" id="navbarSupportedContent">
+     <ul class="navbar-nav mr-auto">
+       <li class="nav-item active">
+         <a class="nav-link" href="{% url 'home' %}">
+           Home <span class="sr-only">(current)</span>
+         </a>
+       </li>
+       {% if not user.is_authenticated %}
+       <li class="nav-item">
+         <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
+       </li>
+       {% else %}
+       <li>
+         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+       </li>
+       {% endif %}
+     </ul>
+   </div>
+   ```
+
 ### Login
 
 1. Add the login form in `users/forms.py`:
@@ -240,15 +290,18 @@ Show students file management in templates
                  Home <span class="sr-only">(current)</span>
                </a>
              </li>
+             {% if not user.is_authenticated %}
              <li class="nav-item">
                <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
              </li>
              <li class="nav-item">
                <a class="nav-link" href="{% url 'login' %}">Sign In</a>
              </li>
+             {% else %}
              <li>
-               <a href="{% url 'logout' %}">Log Out</a>
+               <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
              </li>
+             {% endif %}
            </ul>
          </div>
        </nav>
@@ -273,59 +326,6 @@ Show students file management in templates
    ```
 
 6. Try out the `login` form.
-
-### Logout
-
-1. Add the `logout` view in `users/views.py`:
-
-   ```python
-   from django.contrib.auth import authenticate, login, logout
-
-   ...
-
-   def logout_user(request):
-       logout(request)
-       return redirect("home")
-   ```
-
-   - Explain that no form is needed
-
-2. Add the `logout` view in `urls.py`:
-
-   ```python
-   ...
-
-   urlpatterns = [
-       ...
-       path("logout/", user_views.logout_user, name="logout"),
-   ]
-   ```
-
-3. Add the `logout` to our navbars like so:
-
-   ```html
-   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-     <ul class="navbar-nav mr-auto">
-       <li class="nav-item active">
-         <a class="nav-link" href="{% url 'home' %}">
-           Home <span class="sr-only">(current)</span>
-         </a>
-       </li>
-       {% if not user.is_authenticated %}
-       <li class="nav-item">
-         <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
-       </li>
-       <li class="nav-item">
-         <a class="nav-link" href="{% url 'login' %}">Sign In</a>
-       </li>
-       {% else %}
-       <li>
-         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-       </li>
-       {% endif %}
-     </ul>
-   </div>
-   ```
 
 ### Permissions
 
