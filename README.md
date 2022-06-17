@@ -153,7 +153,7 @@ Show students file management in templates
 1. Add the `logout` view in `users/views.py`:
 
    ```python
-   from django.contrib.auth import authenticate, login, logout
+   from django.contrib.auth import login, logout
 
    ...
 
@@ -211,7 +211,7 @@ Show students file management in templates
 2. Add the `login` view in `users/views.py`:
 
    ```python
-   from django.contrib.auth import authenticate, logout
+   from django.contrib.auth import authenticate, login, logout
    ...
 
    from users.forms import UserLogin, UserRegister
